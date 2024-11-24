@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .post-container {
+            border: 3px solid darkblue;
+            margin-bottom: 10px;
+            padding: 10px;
+            background: white;
+            width: 600px;
+            height: 760px;
+        }
+
+        #posts {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+        }
+
+        body {
+            background: skyblue;
+        }
+
+        h1 {
+            color: darkblue;
+            text-align: center;
+            font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+            font-size: 50px;
+        }
+
+        img {
+            max-width: 100%;
+            max-height: 100%;
+        }
+    </style>
+    <script>
+        fetch('https://jsonplaceholder.typicode.com/users') // Fetching first the users, then the photos, then the comments, in the order they are intended to be displayed.
+            .then(response => response.json())
+            .then(usersData => {
+                fetch('https://jsonplaceholder.typicode.com/photos')
+                    .then(response => response.json())
+                    .then(imageData => {
+                        fetch('https://jsonplaceholder.typicode.com/comments')
+                            .then(response => response.json())
+                            .then(commentsData => {
+                                console.log(usersData);
+                                console.log(imageData);
+                                console.log(commentsData);
+                                const posts = []; // Storing the data for each post in an array, with each post element containing the info for one entire post
+
+                                for (let i = 0; i < 10; i++) { // Since there is only 10 users and many more of the images and comments, we have to use an array with a maximum of 10 so that we only display the first 10 images and comments.
+                                    const user = usersData[i]; // JSON objects are indexed and can be accessed in the same way as arrays, so we can easily transfer the data to a new array
+                                    const comment = commentsData[i];
+                                    const image = imageData[i];
+
+                                    if (user && comment && image) {  // This allows each post to have all the data in one location, the image is displayed through making a new image and giving it the source retrieved from the API
+                                        posts.push(` 
+                                            <div class="post-container">
+                                                <p>@ ${user.name}</p>
+                                                <img src="${image.url}" alt="Post Image"> 
+                                                <p>Comments </p>
+                                                <p>${comment.body}</p>
+                                            </div>
+                                        `);
+                                    }
+                                }
+
+                                document.getElementById('posts').innerHTML = posts.join(''); // This removes the commas and also updates the actual html element
+                            });
+                    });
+            });
+    </script>
+</head>
+
+<body>
+    <h1> Fakebook </h1>
+    <div id="posts"> </div>
+</body>
+
+</html>
